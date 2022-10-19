@@ -60,3 +60,52 @@ class Market:
 			return [0, 2]	# close, keep
 
 
+	def get_noncash_reward(self, t=None, empty=None):
+		if t is None:
+			t = self.t
+		if empty is None:
+			empty = self.empty
+		reward = self.direction * (self.price[t+1] - self.price[t])
+		if empty:
+			reward -= self.open_cost
+		if reward < 0:
+			reward *= (1. + self.risk_averse)
+		return reward
+
+
+	def step(self, action):
+
+		done = False
+		if action == 0:		# wait/close
+			reward = 0.
+			self.empty = True
+		elif action == 1:	# open
+			reward = self.get_noncash_reward()
+			self.empty = False
+		elif action == 2:	# keep
+			reward = self.get_noncash_reward()
+		else:
+			raise ValueError('no such action: '+str(action))
+
+		self.t += 1
+		return self.get_state(), reward, self.t == self.t_max, self.get_valid_actions()
+
+
+	def __init__(self, 
+		sampler, window_state, open_cost,
+		direction=1., risk_averse=0.):
+
+		self.sampler = sampler
+		self.window_state = window_state
+		self.open_cost = open_cost
+		self.direction = direction
+		self.risk_averse = risk_averse
+
+		self.n_action = 3
+		self.state_shape = (window_state, self.sampler.n_var)
+		self.action_labels = ['empty','open','keep']
+		self.t0 = window_state - 1
+
+
+if __name__ == '__main__':
+	test_env()
