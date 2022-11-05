@@ -90,7 +90,18 @@ class Simulator:
 				print('saving results...')
 				self.agent.save(fld_model)
 
-				
+				"""
+				self.visualizer.plot_a_episode(
+					self.env, self.agent.model, 
+					explored_cum_rewards, explored_actions,
+					safe_cum_rewards, safe_actions,
+					os.path.join(fld_save, 'episode_%i.png'%(n)))
+
+				self.visualizer.plot_episodes(
+					explored_total_rewards, safe_total_rewards, explorations, 
+					os.path.join(fld_save, 'total_rewards.png'),
+					MA_window)
+					"""
 
 
 
